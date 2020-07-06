@@ -14,10 +14,19 @@ def deps():
 
 
 @deps.command()
-@click.argument("query")
-def search(query):
-    print(query)
-    search_flow.execute(query)
+@click.argument("query", required=False)
+@click.option("-g", "--group", required=False)
+@click.option("-a", "--artifact", required=False)
+def search(query, group, artifact):
+    if query is None:
+        if group is not None and artifact is not None:
+            search_flow.execute(group_id=group, artifact_id=artifact)
+        else:
+            raise click.UsageError("Invalid usage")
+    elif group is not None or artifact is not None:
+        raise click.UsageError("Invalid usage")
+    else:
+        search_flow.execute(query=query)
 
 
 @deps.command()
